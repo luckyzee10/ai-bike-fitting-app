@@ -37,14 +37,26 @@ export default function OnboardingPage() {
     setUserData(prev => ({ ...prev, [field]: value }))
   }
 
-  const toggleArrayField = (field: 'goals' | 'painAreas', value: string) => {
+  const toggleArrayField = (
+    field: 'goals' | 'painAreas', 
+    value: string
+  ) => {
     setUserData(prev => {
-      const currentArray = prev[field] || []
-      const typedValue = value as UserData[typeof field][0]
-      const newArray = currentArray.includes(typedValue)
-        ? currentArray.filter(item => item !== typedValue)
-        : [...currentArray, typedValue]
-      return { ...prev, [field]: newArray }
+      if (field === 'goals') {
+        const currentArray = prev.goals || []
+        const goalValue = value as 'comfort' | 'performance' | 'endurance'
+        const newArray = currentArray.includes(goalValue)
+          ? currentArray.filter(item => item !== goalValue)
+          : [...currentArray, goalValue]
+        return { ...prev, goals: newArray }
+      } else {
+        const currentArray = prev.painAreas || []
+        const painValue = value as 'neck' | 'shoulders' | 'back' | 'knees' | 'hands' | 'saddle'
+        const newArray = currentArray.includes(painValue)
+          ? currentArray.filter(item => item !== painValue)
+          : [...currentArray, painValue]
+        return { ...prev, painAreas: newArray }
+      }
     })
   }
 
@@ -101,10 +113,13 @@ export default function OnboardingPage() {
           </div>
 
           <h1 className="text-3xl font-bold text-gray-900">
-            Let's Get Your Perfect Fit
+            Let&apos;s Get Your Perfect Fit
           </h1>
           <p className="text-gray-600 mt-2">
             Step {currentStep} of {totalSteps}: Tell us about yourself
+          </p>
+          <p className="text-gray-600 text-sm">
+            We&apos;ll use this information to provide accurate bike fitting recommendations.
           </p>
         </div>
 

@@ -8,20 +8,35 @@
   }
   
   body {
-    @apply text-gray-900 bg-white;
+    /* Dark surface background with light text for modern dashboard feel */
+    @apply bg-surface-900 text-slate-200;
   }
+
+  /* Override common gray text utilities to work on dark background */
+  .text-gray-900 { @apply text-slate-100 !important; }
+  .text-gray-800 { @apply text-slate-200 !important; }
+  .text-gray-700 { @apply text-slate-300 !important; }
+  .text-gray-600 { @apply text-slate-400 !important; }
+  .text-gray-500 { @apply text-slate-500 !important; }
+
+  /* Light background utilities now map to darker surfaces */
+  .bg-gray-50 { @apply bg-surface-800 !important; }
+  .bg-gray-100 { @apply bg-surface-800/90 !important; }
+  .bg-gray-200 { @apply bg-surface-800/80 !important; }
+  .bg-gray-300 { @apply bg-surface-800/70 !important; }
+  .bg-white { @apply bg-surface-800 !important; }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200;
+    @apply bg-primary-600 hover:bg-primary-700 text-slate-100 font-semibold py-3 px-6 rounded-lg transition-colors duration-200;
   }
   
   .btn-secondary {
-    @apply bg-white border-2 border-primary-600 text-primary-600 hover:bg-primary-50 font-semibold py-3 px-6 rounded-lg transition-colors duration-200;
+    @apply bg-transparent border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-slate-100 font-semibold py-3 px-6 rounded-lg transition-colors duration-200;
   }
   
   .card {
-    @apply bg-white rounded-xl shadow-lg border border-gray-100 p-6;
+    @apply bg-surface-800 rounded-xl shadow-lg border border-surface-800/50 p-6;
   }
 } 

@@ -14,14 +14,11 @@ interface PhotoUpload {
 
 export default function UploadPage() {
   const router = useRouter()
-  const fileInputRef = useRef<HTMLInputElement>(null)
   const [photos, setPhotos] = useState<PhotoUpload[]>([])
   const [analyzing, setAnalyzing] = useState(false)
-  const [dragActive, setDragActive] = useState(false)
   const [analysisProgress, setAnalysisProgress] = useState('')
   const [mediaPipeReady, setMediaPipeReady] = useState(false)
   const [mediaPipeError, setMediaPipeError] = useState('')
-  const [currentUploadPosition, setCurrentUploadPosition] = useState<'6-oclock' | '3-oclock'>('6-oclock')
 
   // Check MediaPipe availability on component mount
   useEffect(() => {
@@ -40,7 +37,7 @@ export default function UploadPage() {
     checkMediaPipe()
   }, [])
 
-  const handleFileSelect = (files: FileList | null) => {
+  const handleFileSelect = (files: FileList | null, position: '6-oclock' | '3-oclock') => {
     if (!files || files.length === 0) return
     
     const validFiles = Array.from(files).filter(file => {
@@ -51,36 +48,17 @@ export default function UploadPage() {
 
     const newPhoto: PhotoUpload = {
       file: validFiles[0],
-      position: currentUploadPosition
+      position
     }
     
     setPhotos(prev => {
-      // Remove existing photo of same position if it exists
-      const filtered = prev.filter(p => p.position !== currentUploadPosition)
+      // Replace any existing photo for the same position
+      const filtered = prev.filter(p => p.position !== position)
       return [...filtered, newPhoto]
     })
-
-    // Auto-switch to next needed position
-    if (currentUploadPosition === '6-oclock' && !photos.some(p => p.position === '3-oclock')) {
-      setCurrentUploadPosition('3-oclock')
-    }
   }
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault()
-    setDragActive(false)
-    handleFileSelect(e.dataTransfer.files)
-  }
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault()
-    setDragActive(true)
-  }
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault()
-    setDragActive(false)
-  }
+  // Drag-and-drop interactions are now handled inline within each upload card
 
   const removePhoto = (position: '6-oclock' | '3-oclock') => {
     setPhotos(prev => prev.filter(p => p.position !== position))
@@ -101,7 +79,7 @@ export default function UploadPage() {
       
       // Process each photo
       for (const photo of photos) {
-        setAnalysisProgress(`Analyzing ${photo.position === '6-oclock' ? '6 o\'clock' : '3 o\'clock'} position...`)
+        setAnalysisProgress(`Analyzing ${photo.position === '6-oclock' ? '6 o&apos;clock' : '3 o&apos;clock'} position...`)
         
         try {
           const poseAnalysis = await processImageForBikeFit(photo.file, photo.position)
@@ -232,7 +210,7 @@ export default function UploadPage() {
                   </div>
                   <div>
                     <h3 className="font-medium flex items-center">
-                      Photo 1: 6 O'Clock Position
+                      Photo 1: 6 O&apos;Clock Position
                       {getPhotoByPosition('6-oclock') && <CheckCircle className="w-4 h-4 text-green-500 ml-2" />}
                     </h3>
                     <p className="text-sm text-gray-600">Pedal at bottom (knee extension) - measures saddle height, torso angle, elbow extension</p>
@@ -245,7 +223,7 @@ export default function UploadPage() {
                   </div>
                   <div>
                     <h3 className="font-medium flex items-center">
-                      Photo 2: 3 O'Clock Position
+                      Photo 2: 3 O&apos;Clock Position
                       {getPhotoByPosition('3-oclock') && <CheckCircle className="w-4 h-4 text-green-500 ml-2" />}
                     </h3>
                     <p className="text-sm text-gray-600">Pedal forward (horizontal) - measures KOPS alignment and postural consistency</p>
@@ -299,180 +277,124 @@ export default function UploadPage() {
             </div>
           </div>
 
-          {/* Upload Area */}
-          <div className="space-y-6">
-            {/* Position Selector */}
-            <div className="card">
-              <h3 className="font-medium mb-4">Select Photo Position to Upload</h3>
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  onClick={() => setCurrentUploadPosition('6-oclock')}
-                  className={`p-3 border-2 rounded-lg text-sm font-medium transition-colors ${
-                    currentUploadPosition === '6-oclock'
-                      ? 'border-primary-500 bg-primary-50 text-primary-700'
-                      : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+          {/* Upload Cards */}
+          <div className="grid md:grid-cols-2 gap-6">
+            {(['6-oclock', '3-oclock'] as const).map((position) => {
+              const photo = getPhotoByPosition(position)
+              const label = position === '6-oclock' ? '6 O\'Clock' : '3 O\'Clock'
+              return (
+                <div
+                  key={position}
+                  className={`card border-2 border-dashed transition-colors ${
+                    photo ? 'border-green-500' : 'border-gray-500 hover:border-primary-500'
                   }`}
+                  onDrop={(e) => {
+                    e.preventDefault()
+                    handleFileSelect(e.dataTransfer.files, position)
+                  }}
+                  onDragOver={(e) => e.preventDefault()}
                 >
-                  <Clock className="w-5 h-5 mx-auto mb-1" />
-                  6 O'Clock
-                  {getPhotoByPosition('6-oclock') && <CheckCircle className="w-4 h-4 text-green-500 mx-auto mt-1" />}
-                </button>
-                <button
-                  onClick={() => setCurrentUploadPosition('3-oclock')}
-                  className={`p-3 border-2 rounded-lg text-sm font-medium transition-colors ${
-                    currentUploadPosition === '3-oclock'
-                      ? 'border-primary-500 bg-primary-50 text-primary-700'
-                      : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
-                  }`}
-                >
-                  <Clock className="w-5 h-5 mx-auto mb-1" />
-                  3 O'Clock
-                  {getPhotoByPosition('3-oclock') && <CheckCircle className="w-4 h-4 text-green-500 mx-auto mt-1" />}
-                </button>
-              </div>
-            </div>
-
-            {/* Drag & Drop Zone */}
-            <div
-              className={`card border-2 border-dashed transition-colors cursor-pointer ${
-                dragActive 
-                  ? 'border-primary-500 bg-primary-50' 
-                  : mediaPipeReady 
-                  ? 'border-gray-300 hover:border-primary-400' 
-                  : 'border-gray-200 bg-gray-50'
-              }`}
-              onDrop={handleDrop}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onClick={() => mediaPipeReady && fileInputRef.current?.click()}
-            >
-              <div className="text-center py-8">
-                <Upload className={`w-12 h-12 mx-auto mb-4 ${mediaPipeReady ? 'text-gray-400' : 'text-gray-300'}`} />
-                <h3 className={`text-lg font-medium mb-2 ${mediaPipeReady ? 'text-gray-900' : 'text-gray-500'}`}>
-                  Upload {currentUploadPosition === '6-oclock' ? '6 O\'Clock' : '3 O\'Clock'} Photo
-                </h3>
-                <p className={`text-sm mb-4 ${mediaPipeReady ? 'text-gray-500' : 'text-gray-400'}`}>
-                  Drop image here or click to browse (JPG, PNG up to 10MB)
-                </p>
-                <div className="flex justify-center space-x-4">
-                  <button 
-                    className={`btn-primary ${!mediaPipeReady ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    disabled={!mediaPipeReady}
-                  >
-                    <Camera className="w-4 h-4 mr-2" />
-                    Choose File
-                  </button>
-                </div>
-              </div>
-              
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => handleFileSelect(e.target.files)}
-                disabled={!mediaPipeReady}
-              />
-            </div>
-
-            {/* Uploaded Photos Status */}
-            <div className="space-y-3">
-              {(['6-oclock', '3-oclock'] as const).map((position) => {
-                const photo = getPhotoByPosition(position)
-                return (
-                  <div key={position} className={`card ${photo ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}`}>
+                  {!photo ? (
+                    <label
+                      htmlFor={`file-input-${position}`}
+                      className="flex flex-col items-center justify-center text-center py-10 cursor-pointer"
+                    >
+                      <Upload className="w-12 h-12 mb-4 text-slate-400" />
+                      <h3 className="text-lg font-medium mb-2">Upload {label} Photo</h3>
+                      <p className="text-sm text-slate-500 mb-4">Drop image here or click to browse</p>
+                      <span className="btn-primary inline-flex items-center">
+                        <Camera className="w-4 h-4 mr-2" />
+                        Choose File
+                      </span>
+                      <input
+                        id={`file-input-${position}`}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        disabled={!mediaPipeReady}
+                        onChange={(e) => handleFileSelect(e.target.files, position)}
+                      />
+                    </label>
+                  ) : (
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
-                        <Clock className={`w-5 h-5 ${photo ? 'text-green-600' : 'text-gray-400'}`} />
+                        <CheckCircle className="w-5 h-5 text-green-500" />
                         <div>
-                          <h4 className={`font-medium ${photo ? 'text-green-900' : 'text-gray-700'}`}>
-                            {position === '6-oclock' ? '6 O\'Clock Position' : '3 O\'Clock Position'}
-                          </h4>
-                          {photo ? (
-                            <p className="text-sm text-green-700">{photo.file.name} ({(photo.file.size / 1024 / 1024).toFixed(1)} MB)</p>
-                          ) : (
-                            <p className="text-sm text-gray-500">Not uploaded yet</p>
-                          )}
+                          <h4 className="font-medium text-green-400">{label} Photo</h4>
+                          <p className="text-sm text-slate-500">
+                            {photo.file.name} ({(photo.file.size / 1024 / 1024).toFixed(1)} MB)
+                          </p>
                         </div>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        {photo ? (
-                          <>
-                            <CheckCircle className="w-5 h-5 text-green-500" />
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                removePhoto(position)
-                              }}
-                              className="text-red-500 hover:text-red-700"
-                              disabled={analyzing}
-                            >
-                              ×
-                            </button>
-                          </>
-                        ) : (
-                          <AlertCircle className="w-5 h-5 text-gray-400" />
-                        )}
-                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          removePhoto(position)
+                        }}
+                        className="text-red-500 hover:text-red-700"
+                        disabled={analyzing}
+                      >
+                        ×
+                      </button>
                     </div>
-                  </div>
-                )
-              })}
-            </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
 
-            {/* Analysis Progress */}
-            {analyzing && analysisProgress && (
-              <div className="card bg-primary-50 border-primary-200">
-                <div className="flex items-center space-x-3">
-                  <Loader2 className="w-5 h-5 text-primary-600 animate-spin" />
-                  <div>
-                    <p className="font-medium text-primary-900">Analyzing Your Bike Fit</p>
-                    <p className="text-sm text-primary-700">{analysisProgress}</p>
-                  </div>
+          {/* Analysis Progress */}
+          {analyzing && analysisProgress && (
+            <div className="card bg-primary-50 border-primary-200 mt-6">
+              <div className="flex items-center space-x-3">
+                <Loader2 className="w-5 h-5 text-primary-600 animate-spin" />
+                <div>
+                  <p className="font-medium text-primary-900">Analyzing Your Bike Fit</p>
+                  <p className="text-sm text-primary-700">{analysisProgress}</p>
                 </div>
               </div>
-            )}
+            </div>
+          )}
 
-            {/* Analyze Button */}
-            <button
-              onClick={handleAnalyze}
-              disabled={!hasRequiredPhotos || analyzing || !mediaPipeReady}
-              className={`w-full btn-primary flex items-center justify-center ${
-                (!hasRequiredPhotos || analyzing || !mediaPipeReady) ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
-            >
-              {analyzing ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Analyzing with AI...
-                </>
-              ) : !mediaPipeReady ? (
-                <>
-                  <Wifi className="w-4 h-4 mr-2" />
-                  Loading AI Libraries...
-                </>
-              ) : !hasRequiredPhotos ? (
-                <>
-                  <AlertCircle className="w-4 h-4 mr-2" />
-                  Upload Both Photos
-                </>
-              ) : (
-                <>
-                  <CheckCircle className="w-4 h-4 mr-2" />
-                  Analyze My Bike Fit
-                </>
-              )}
-            </button>
-
-            {!hasRequiredPhotos && mediaPipeReady && (
-              <div className="flex items-center p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <AlertCircle className="w-5 h-5 text-yellow-600 mr-3 flex-shrink-0" />
-                <p className="text-sm text-yellow-800">
-                  Please upload both 6 o'clock and 3 o'clock position photos for comprehensive analysis
-                </p>
-              </div>
+          {/* Analyze Button */}
+          <button
+            onClick={handleAnalyze}
+            disabled={!hasRequiredPhotos || analyzing || !mediaPipeReady}
+            className={`w-full btn-primary flex items-center justify-center mt-6 ${
+              (!hasRequiredPhotos || analyzing || !mediaPipeReady) ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+          >
+            {analyzing ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Analyzing with AI...
+              </>
+            ) : !mediaPipeReady ? (
+              <>
+                <Wifi className="w-4 h-4 mr-2" />
+                Loading AI Libraries...
+              </>
+            ) : !hasRequiredPhotos ? (
+              <>
+                <AlertCircle className="w-4 h-4 mr-2" />
+                Upload Both Photos
+              </>
+            ) : (
+              <>
+                <CheckCircle className="w-4 h-4 mr-2" />
+                Analyze My Bike Fit
+              </>
             )}
-          </div>
+          </button>
+
+          {!hasRequiredPhotos && mediaPipeReady && (
+            <div className="flex items-center p-4 bg-yellow-50 border border-yellow-200 rounded-lg mt-4">
+              <AlertCircle className="w-5 h-5 text-yellow-600 mr-3 flex-shrink-0" />
+              <p className="text-sm text-yellow-800">
+                Please upload both 6 o’clock and 3 o’clock position photos for comprehensive analysis
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>

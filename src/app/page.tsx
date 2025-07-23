@@ -1,26 +1,31 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowRight, Target, Shield, TrendingUp } from 'lucide-react'
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-surface-900 to-surface-800">
       {/* Header */}
-      <header className="container mx-auto px-4 py-6">
-        <nav className="flex justify-between items-center">
-          <div className="text-2xl font-bold text-primary-700">
-            Bike Fit Pro
-          </div>
-          <div className="hidden md:flex space-x-6">
-            <a href="#features" className="text-gray-600 hover:text-primary-600">Features</a>
-            <a href="#how-it-works" className="text-gray-600 hover:text-primary-600">How It Works</a>
-            <a href="#faq" className="text-gray-600 hover:text-primary-600">FAQ</a>
-          </div>
-        </nav>
+      <header className="container mx-auto px-4 py-6 flex flex-col items-center">
+        <Link href="/" className="block">
+          <Image
+            src="/logo/brink-logo.png"
+            alt="Bike Fit Pro logo"
+            width={165}
+            height={44}
+            priority
+          />
+        </Link>
+        <div className="hidden md:flex space-x-6 mt-4">
+          <a href="#features" className="text-gray-600 hover:text-primary-600">Features</a>
+          <a href="#how-it-works" className="text-gray-600 hover:text-primary-600">How It Works</a>
+          <a href="#faq" className="text-gray-600 hover:text-primary-600">FAQ</a>
+        </div>
       </header>
 
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-16 text-center">
-        <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+        <h1 className="text-5xl md:text-6xl font-bold mb-6 text-slate-100">
           Get a Pro Bike Fit—
           <span className="text-primary-600">From Home</span>
         </h1>
@@ -38,7 +43,7 @@ export default function HomePage() {
 
       {/* Features Section */}
       <section id="features" className="container mx-auto px-4 py-16">
-        <h2 className="text-3xl font-bold text-center mb-12">Why Choose Bike Fit Pro?</h2>
+        <h2 className="text-3xl font-bold mb-8">Perfect your cycling position with AI that doesn&apos;t miss a beat</h2>
         <div className="grid md:grid-cols-3 gap-8">
           <div className="card text-center">
             <Target className="h-12 w-12 text-primary-600 mx-auto mb-4" />
@@ -65,7 +70,7 @@ export default function HomePage() {
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="bg-white py-16">
+      <section id="how-it-works" className="bg-surface-800 py-16">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">How It Works</h2>
           <div className="grid md:grid-cols-3 gap-8">
@@ -75,7 +80,7 @@ export default function HomePage() {
               </div>
               <h3 className="text-xl font-semibold mb-3">Take Photos</h3>
               <p className="text-gray-600">
-                Capture side-view photos of yourself riding in 6 o'clock and 3 o'clock pedal positions.
+                Capture side-view photos of yourself riding in 6 o&apos;clock and 3 o&apos;clock pedal positions.
               </p>
             </div>
             <div className="text-center">
@@ -107,7 +112,7 @@ export default function HomePage() {
             Ready to Transform Your Ride?
           </h2>
           <p className="text-xl text-primary-100 mb-8">
-            Join thousands of cyclists who've improved their comfort and performance.
+            Join thousands of cyclists who&apos;ve improved their comfort and performance.
           </p>
           <Link href="/onboarding" className="btn-secondary bg-white text-primary-600 hover:bg-gray-50">
             Start Your Free Analysis
@@ -116,7 +121,7 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
+      <footer className="bg-surface-900 text-slate-300 py-12">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8">
             <div>

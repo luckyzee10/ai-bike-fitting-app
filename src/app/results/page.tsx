@@ -165,11 +165,11 @@ export default function ResultsPage() {
             Back to Upload
           </button>
           
-          <div className="flex justify-between items-start">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              <h1 className="text-2xl md:text-3xl font-bold text-slate-100 mb-2">
                 Your Bike Fit Analysis
-                {isEnhancedAnalysis && <span className="ml-3 px-3 py-1 bg-primary-100 text-primary-800 text-base font-medium rounded-full">Enhanced AI</span>}
+                {isEnhancedAnalysis && <span className="ml-3 px-3 py-1 bg-primary-600 text-slate-100 text-xs md:text-sm font-medium rounded-full whitespace-nowrap">Enhanced AI</span>}
               </h1>
               <p className="text-gray-600">
                 {isEnhancedAnalysis 
@@ -179,7 +179,7 @@ export default function ResultsPage() {
               </p>
             </div>
             
-            <div className="flex space-x-3">
+            <div className="flex space-x-3 sm:ml-auto">
               <button className="btn-secondary">
                 <Download className="w-4 h-4 mr-2" />
                 Export PDF
@@ -216,20 +216,20 @@ export default function ResultsPage() {
         {hasVisualData && (
           <div className="mb-8">
             <div className="card">
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
                 <h2 className="text-2xl font-semibold flex items-center">
                   <Eye className="w-6 h-6 text-primary-600 mr-3" />
                   Visual Analysis
-                  <span className="ml-3 px-2 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded">
-                    {activeVisualization === '6-oclock' ? '6 O\'Clock Position' : '3 O\'Clock Position'}
+                  <span className="ml-3 px-2 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded whitespace-nowrap">
+                    {activeVisualization === '6-oclock' ? "6 O'Clock Position" : "3 O'Clock Position"}
                   </span>
                 </h2>
-                <div className="flex items-center space-x-3">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3 md:ml-auto">
                   {isEnhancedAnalysis && (
-                    <div className="flex bg-gray-100 rounded-lg p-1">
+                    <div className="flex bg-gray-100 rounded-lg p-1 flex-shrink-0">
                       <button
                         onClick={() => setActiveVisualization('6-oclock')}
-                        className={`flex items-center px-3 py-1 rounded text-sm font-medium transition-colors ${
+                        className={`flex items-center px-3 py-1 rounded text-xs sm:text-sm font-medium transition-colors ${
                           activeVisualization === '6-oclock'
                             ? 'bg-white text-primary-700 shadow-sm'
                             : 'text-gray-600 hover:text-gray-800'
@@ -240,7 +240,7 @@ export default function ResultsPage() {
                       </button>
                       <button
                         onClick={() => setActiveVisualization('3-oclock')}
-                        className={`flex items-center px-3 py-1 rounded text-sm font-medium transition-colors ${
+                        className={`flex items-center px-3 py-1 rounded text-xs sm:text-sm font-medium transition-colors ${
                           activeVisualization === '3-oclock'
                             ? 'bg-white text-primary-700 shadow-sm'
                             : 'text-gray-600 hover:text-gray-800'
@@ -253,7 +253,7 @@ export default function ResultsPage() {
                   )}
                   <button
                     onClick={() => setShowVisualization(!showVisualization)}
-                    className="btn-secondary text-sm"
+                    className="btn-secondary text-xs sm:text-sm whitespace-nowrap"
                   >
                     {showVisualization ? 'Hide' : 'Show'} Visualization
                   </button>
@@ -334,7 +334,7 @@ export default function ResultsPage() {
                     <span>Knee Bend Angle</span>
                     <span className="text-gray-500">
                       {activeVisualization === '3-oclock' ? '70° - 90°' : '25° - 35°'}
-                      {activeVisualization === '3-oclock' && <span className="text-xs block">3 o'clock expected</span>}
+                      {activeVisualization === '3-oclock' && <span className="text-xs block">3 o&apos;clock expected</span>}
                     </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
@@ -445,17 +445,17 @@ export default function ResultsPage() {
               ) : (
                 <div className="space-y-6">
                   {getRecommendations().map((rec, index) => (
-                    <div key={index} className={`card border-l-4 ${getPriorityColor(rec.priority)}`}>
+                    <div key={index} className={`card border-l-4 ${getPriorityColor(rec.priority)} text-slate-900`}>
                       <div className="flex items-start space-x-4">
                         {getPriorityIcon(rec.priority)}
                         <div className="flex-1">
                           <div className="flex justify-between items-start mb-2">
-                            <h3 className="font-semibold text-lg capitalize">
+                            <h3 className="font-semibold text-lg capitalize text-slate-900">
                               {rec.type.replace('_', ' ')}
                             </h3>
                             <div className="flex items-center space-x-2">
                               {(rec as any).basedOn && getRecommendationBadge((rec as any).basedOn)}
-                              <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                              <span className={`px-2 py-1 text-xs font-medium rounded-full whitespace-nowrap ${
                                 rec.priority === 'high' ? 'bg-red-100 text-red-800' :
                                 rec.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
                                 'bg-green-100 text-green-800'
@@ -465,13 +465,13 @@ export default function ResultsPage() {
                             </div>
                           </div>
                           
-                          <p className="text-gray-700 mb-3">{rec.description}</p>
+                          <p className="text-slate-800 mb-3">{rec.description}</p>
                           
-                          <div className="bg-gray-50 rounded-lg p-3">
-                            <h4 className="font-medium text-sm text-gray-900 mb-1">
+                          <div className="bg-white/70 rounded-lg p-3">
+                            <h4 className="font-medium text-sm text-slate-900 mb-1">
                               Recommended Adjustment:
                             </h4>
-                            <p className="text-sm text-gray-700">{rec.adjustment}</p>
+                            <p className="text-sm text-slate-800">{rec.adjustment}</p>
                           </div>
                         </div>
                       </div>
@@ -487,7 +487,7 @@ export default function ResultsPage() {
               
               <div className="space-y-4">
                 <div className="flex items-start space-x-3">
-                  <div className="bg-primary-100 rounded-full w-8 h-8 flex items-center justify-center mt-1">
+                  <div className="bg-primary-600/20 rounded-full w-8 h-8 flex items-center justify-center mt-1 flex-shrink-0">
                     <span className="text-sm font-bold text-primary-600">1</span>
                   </div>
                   <div>
@@ -500,7 +500,7 @@ export default function ResultsPage() {
                 </div>
                 
                 <div className="flex items-start space-x-3">
-                  <div className="bg-primary-100 rounded-full w-8 h-8 flex items-center justify-center mt-1">
+                  <div className="bg-primary-600/20 rounded-full w-8 h-8 flex items-center justify-center mt-1 flex-shrink-0">
                     <span className="text-sm font-bold text-primary-600">2</span>
                   </div>
                   <div>
@@ -513,7 +513,7 @@ export default function ResultsPage() {
                 </div>
                 
                 <div className="flex items-start space-x-3">
-                  <div className="bg-primary-100 rounded-full w-8 h-8 flex items-center justify-center mt-1">
+                  <div className="bg-primary-600/20 rounded-full w-8 h-8 flex items-center justify-center mt-1 flex-shrink-0">
                     <span className="text-sm font-bold text-primary-600">3</span>
                   </div>
                   <div>
