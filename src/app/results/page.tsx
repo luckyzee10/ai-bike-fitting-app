@@ -221,7 +221,7 @@ export default function ResultsPage() {
                   <Eye className="w-6 h-6 text-primary-600 mr-3" />
                   Visual Analysis
                   <span className="ml-3 px-2 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded whitespace-nowrap">
-                    {activeVisualization === '6-oclock' ? "6 O'Clock Position" : "3 O'Clock Position"}
+                    {activeVisualization === '6-oclock' ? '6 O\'Clock Position' : '3 O\'Clock Position'}
                   </span>
                 </h2>
                 <div className="flex flex-wrap items-center gap-2 sm:gap-3 md:ml-auto">
@@ -236,7 +236,7 @@ export default function ResultsPage() {
                         }`}
                       >
                         <Clock className="w-4 h-4 mr-1" />
-                        6 O'Clock
+                        {'6 O\'Clock'}
                       </button>
                       <button
                         onClick={() => setActiveVisualization('3-oclock')}
@@ -247,7 +247,7 @@ export default function ResultsPage() {
                         }`}
                       >
                         <Clock className="w-4 h-4 mr-1" />
-                        3 O'Clock
+                        {'3 O\'Clock'}
                       </button>
                     </div>
                   )}
